@@ -1,0 +1,79 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9CD3F032-2777-4CBA-A11A-7AA211E953D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{2AF10465-79FE-4D2D-82A4-F99B0CE83984}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{DB8AFE9F-D89E-42C1-A376-B923BA29C684}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{E125D6C6-63DB-4745-9BC3-303A79516BB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{A9542BBC-89D8-4B5D-8BBB-E48F1BA58807}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{522CBBB0-E73F-49E6-B0CA-AA7232ED13B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenas.LeaveManagement.Domain", "Tenas.LeaveManagement.Domain\Tenas.LeaveManagement.Domain.csproj", "{BD682333-2B86-4561-873C-311AB98715E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenas.LeaveManagement.Application", "Tenas.LeaveManagement.Application\Tenas.LeaveManagement.Application.csproj", "{6EAB71AD-10C8-49D9-B5C7-BB04E06D006F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenas.LeaveManagement.Infrastructure", "Tenas.LeaveManagement.Infrastructure\Tenas.LeaveManagement.Infrastructure.csproj", "{FBD229C2-100D-432B-9D2B-A6B9A7FEB7C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenas.LeaveManagement.Persistance", "Tenas.LeaveManagement.Persistance\Tenas.LeaveManagement.Persistance.csproj", "{00654870-77A7-492C-BF73-90554879DBC4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenas.LeaveManagement.API", "Tenas.LeaveManagement.API\Tenas.LeaveManagement.API.csproj", "{8666FF80-1B63-40B1-9BEB-71E56D87077F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tenas.LeaveManagement.WebApi", "Tenas.LeaveManagement.WebApi\Tenas.LeaveManagement.WebApi.csproj", "{01EEDBE8-D7EC-4CDD-89C3-29907E99A00C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD682333-2B86-4561-873C-311AB98715E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD682333-2B86-4561-873C-311AB98715E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD682333-2B86-4561-873C-311AB98715E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD682333-2B86-4561-873C-311AB98715E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EAB71AD-10C8-49D9-B5C7-BB04E06D006F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EAB71AD-10C8-49D9-B5C7-BB04E06D006F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EAB71AD-10C8-49D9-B5C7-BB04E06D006F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EAB71AD-10C8-49D9-B5C7-BB04E06D006F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBD229C2-100D-432B-9D2B-A6B9A7FEB7C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBD229C2-100D-432B-9D2B-A6B9A7FEB7C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBD229C2-100D-432B-9D2B-A6B9A7FEB7C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBD229C2-100D-432B-9D2B-A6B9A7FEB7C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00654870-77A7-492C-BF73-90554879DBC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00654870-77A7-492C-BF73-90554879DBC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00654870-77A7-492C-BF73-90554879DBC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00654870-77A7-492C-BF73-90554879DBC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8666FF80-1B63-40B1-9BEB-71E56D87077F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8666FF80-1B63-40B1-9BEB-71E56D87077F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8666FF80-1B63-40B1-9BEB-71E56D87077F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8666FF80-1B63-40B1-9BEB-71E56D87077F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01EEDBE8-D7EC-4CDD-89C3-29907E99A00C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01EEDBE8-D7EC-4CDD-89C3-29907E99A00C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01EEDBE8-D7EC-4CDD-89C3-29907E99A00C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01EEDBE8-D7EC-4CDD-89C3-29907E99A00C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DB8AFE9F-D89E-42C1-A376-B923BA29C684} = {9CD3F032-2777-4CBA-A11A-7AA211E953D0}
+		{E125D6C6-63DB-4745-9BC3-303A79516BB2} = {9CD3F032-2777-4CBA-A11A-7AA211E953D0}
+		{A9542BBC-89D8-4B5D-8BBB-E48F1BA58807} = {9CD3F032-2777-4CBA-A11A-7AA211E953D0}
+		{522CBBB0-E73F-49E6-B0CA-AA7232ED13B5} = {9CD3F032-2777-4CBA-A11A-7AA211E953D0}
+		{BD682333-2B86-4561-873C-311AB98715E3} = {E125D6C6-63DB-4745-9BC3-303A79516BB2}
+		{6EAB71AD-10C8-49D9-B5C7-BB04E06D006F} = {E125D6C6-63DB-4745-9BC3-303A79516BB2}
+		{FBD229C2-100D-432B-9D2B-A6B9A7FEB7C9} = {A9542BBC-89D8-4B5D-8BBB-E48F1BA58807}
+		{00654870-77A7-492C-BF73-90554879DBC4} = {A9542BBC-89D8-4B5D-8BBB-E48F1BA58807}
+		{8666FF80-1B63-40B1-9BEB-71E56D87077F} = {DB8AFE9F-D89E-42C1-A376-B923BA29C684}
+		{01EEDBE8-D7EC-4CDD-89C3-29907E99A00C} = {DB8AFE9F-D89E-42C1-A376-B923BA29C684}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {371523E7-D1FF-416C-BDDB-2E6CEAD50E74}
+	EndGlobalSection
+EndGlobal
