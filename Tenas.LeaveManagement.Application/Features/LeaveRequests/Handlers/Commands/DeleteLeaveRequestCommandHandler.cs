@@ -8,19 +8,21 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Handlers.Comm
 {
     public class DeleteLeaveRequestCommandHandler : IRequestHandler<DeleteLeaveRequestCommand, BaseCommandResponse>
     {
-        private readonly IGenericRepository<LeaveRequest> _leaveRequestRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteLeaveRequestCommandHandler(IGenericRepository<LeaveRequest> leaveRequestRepository)
-        {
-            _leaveRequestRepository = leaveRequestRepository;
-        }
+        //private readonly IGenericRepository<LeaveRequest> _leaveRequestRepository;
+
+        public DeleteLeaveRequestCommandHandler(IUnitOfWork unitOfWork)
+            => _unitOfWork = unitOfWork;
 
         public async Task<BaseCommandResponse> Handle(DeleteLeaveRequestCommand request, CancellationToken cancellationToken)
         {
             BaseCommandResponse response = new();
             try
             {
-                await _leaveRequestRepository.Delete(request.Id);
+                //await _leaveRequestRepository.Delete(request.Id);
+                await _unitOfWork.GenericRepository<LeaveRequest>().Delete(request.Id);
+                await _unitOfWork.Save();
                 response.Success = true;
                 response.Message = "Deleted Successfully";
                 response.Id = request.Id;

@@ -1,5 +1,6 @@
 ﻿using Tenas.LeaveManagement.Application.DTOs.Common;
 using Tenas.LeaveManagement.Application.DTOs.LeaveType;
+using Tenas.LeaveManagement.Application.Models.Identity;
 
 namespace Tenas.LeaveManagement.Application.DTOs.LeaveRequest
 {
@@ -14,5 +15,7 @@ namespace Tenas.LeaveManagement.Application.DTOs.LeaveRequest
         public DateTime? DateActioned { get; set; }
         public bool? Approved { get; set; }
         public bool Cancelled { get; set; }
+        public Employee Employee { get; set; }
+        public Guid EmployeeId { get; set; }
     }
 }

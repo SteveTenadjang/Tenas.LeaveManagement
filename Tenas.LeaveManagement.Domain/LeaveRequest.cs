@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tenas.LeaveManagement.Domain.Common;
+﻿using Tenas.LeaveManagement.Domain.Common;
 
 namespace Tenas.LeaveManagement.Domain
 {
@@ -18,5 +13,6 @@ namespace Tenas.LeaveManagement.Domain
         public DateTime? DateActioned { get; set; }
         public bool? Approved { get; set; }
         public bool Cancelled { get; set; }
+        public Guid EmployeeId { get; set; }
     }
 }

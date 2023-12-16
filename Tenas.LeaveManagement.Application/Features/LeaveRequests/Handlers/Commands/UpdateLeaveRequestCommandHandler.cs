@@ -10,12 +10,12 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Handlers.Comm
 {
     public class UpdateLeaveRequestCommandHandler : IRequestHandler<UpdateLeaveRequestCommand, BaseCommandResponse>
     {
-        private readonly IGenericRepository<LeaveRequest> _leaveRequestRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateLeaveRequestCommandHandler(IGenericRepository<LeaveRequest> leaveRequestRepository, IMapper mapper)
+        public UpdateLeaveRequestCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _leaveRequestRepository = leaveRequestRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -24,20 +24,25 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Handlers.Comm
             BaseCommandResponse response = new();
             try
             {
-                var validatedModel = await new UpdateLeaveRequestDtoValidator(_leaveRequestRepository).ValidateAsync(request.UpdateLeaveRequestDto, cancellationToken);
 
-                if (!validatedModel.IsValid)
-                {
-                    response.Success = false;
-                    response.Message = "Update Failed";
-                    response.Errors = validatedModel.Errors.Select(e => e.ErrorMessage).ToList();
-                    return response;
-                }
 
                 if (request.UpdateLeaveRequestDto is not null)
                 {
-                    var leaveRequest = _mapper.Map<LeaveRequest>(request.UpdateLeaveRequestDto);
-                    await _leaveRequestRepository.Update(leaveRequest);
+                    var leaveRequest = await _unitOfWork.GenericRepository<LeaveRequest>().GetById(request.UpdateLeaveRequestDto.Id);
+                    //var leaveRequest = await _leaveRequestRepository.GetById(request.UpdateLeaveRequestDto.Id);
+
+                    var validatedModel = await new UpdateLeaveRequestDtoValidator(_unitOfWork.GenericRepository<LeaveRequest>()).ValidateAsync(request.UpdateLeaveRequestDto, cancellationToken);
+
+                    if (!validatedModel.IsValid)
+                    {
+                        response.Success = false;
+                        response.Message = "Update Failed";
+                        response.Errors = validatedModel.Errors.Select(e => e.ErrorMessage).ToList();
+                        return response;
+                    }
+                    _mapper.Map(request.UpdateLeaveRequestDto, leaveRequest);
+                    await _unitOfWork.GenericRepository<LeaveRequest>().Update(leaveRequest);
+                    await _unitOfWork.Save();
 
                     response.Success = true;
                     response.Message = "Updated Successfully";
@@ -46,11 +51,23 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Handlers.Comm
                 }
                 else if(request.ChangeLeaveRequestApprovalDto is not null)
                 {
-                    var leaveRequest = _mapper.Map<LeaveRequest>(request.ChangeLeaveRequestApprovalDto);
-                    await _leaveRequestRepository.Update(leaveRequest);
-                    response.Success = true;
-                    response.Message = "Approval changed Successfully";
-                    response.Id = leaveRequest.Id;
+                    var leaveRequest = await _unitOfWork.GenericRepository<LeaveRequest>().GetById(request.ChangeLeaveRequestApprovalDto.Id);
+                    if (request.ChangeLeaveRequestApprovalDto.Approved)
+                    {
+                        var allocations = await _unitOfWork.GenericRepository<LeaveAllocation>().Find(x => x.Id == leaveRequest.Id && x.EmployeeId == leaveRequest.EmployeeId);
+                        //var allocations = await _leaveAllocationRepository.Find(x => x.Id == leaveRequest.Id && x.EmployeeId == leaveRequest.EmployeeId);
+                        var allocation = allocations.FirstOrDefault();
+                        int daysRequested = (int)(leaveRequest.StartDate - leaveRequest.EndDate).TotalDays;
+
+                        allocation.NumberOfDays = daysRequested;
+                        await _unitOfWork.GenericRepository<LeaveAllocation>().Update(allocation);
+                        //await _leaveAllocationRepository.Update(allocation);
+
+                        response.Success = true;
+                        response.Message = "Approval changed Successfully";
+                        response.Id = leaveRequest.Id;
+                    }
+                    await _unitOfWork.Save();
                 }
 
             }

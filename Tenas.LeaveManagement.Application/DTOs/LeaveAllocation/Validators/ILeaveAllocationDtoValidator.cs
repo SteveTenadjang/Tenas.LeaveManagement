@@ -26,7 +26,7 @@ namespace Tenas.LeaveManagement.Application.DTOs.LeaveAllocation.Validators
 
             RuleFor(x => x.LeaveTypeId)
                 .NotEmpty()
-                .MustAsync(async (id, token) => !await _leaveAllocationRepository.Exists(id))
+                .MustAsync(async (id, token) => await _leaveAllocationRepository.Exists(id))
                 .WithMessage("{PropertyName} doesn't existe.");
         }
     }

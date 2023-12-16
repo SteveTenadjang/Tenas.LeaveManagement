@@ -4,17 +4,18 @@ using Tenas.LeaveManagement.Application.DTOs.LeaveAllocation;
 using Tenas.LeaveManagement.Application.Features.LeaveAllocations.Requests.Queries;
 using Tenas.LeaveManagement.Application.Contracts.Persistance;
 using Tenas.LeaveManagement.Application.Reponses;
+using Tenas.LeaveManagement.Domain;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Queries
 {
     public class GetLeaveAllocationDetailRequestHandler : IRequestHandler<GetLeaveAllocationDetailRequest, BaseQueryResponse>
     {
-        private readonly IGenericRepository<Domain.LeaveAllocation> _leaveAllocationRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetLeaveAllocationDetailRequestHandler(IGenericRepository<Domain.LeaveAllocation> leaveAllocationRepository, IMapper mapper)
+        public GetLeaveAllocationDetailRequestHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _leaveAllocationRepository = leaveAllocationRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -23,7 +24,7 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Q
             BaseQueryResponse response = new();
             try
             {
-                var leaveAllocation = await _leaveAllocationRepository.GetById(request.Id);
+                var leaveAllocation = await _unitOfWork.GenericRepository<LeaveAllocation>().GetById(request.Id);
                 response.Success = true;
                 response.Data = _mapper.Map<LeaveAllocationDto>(leaveAllocation);
             }

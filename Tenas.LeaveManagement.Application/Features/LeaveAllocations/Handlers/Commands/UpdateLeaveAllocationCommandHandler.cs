@@ -10,12 +10,12 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.C
 {
     public class UpdateLeaveAllocationCommandHandler : IRequestHandler<UpdateLeaveAllocationCommand, BaseCommandResponse>
     {
-        private readonly IGenericRepository<LeaveAllocation> _leaveAllocationRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateLeaveAllocationCommandHandler(IGenericRepository<LeaveAllocation> leaveAllocationRepository, IMapper mapper)
+        public UpdateLeaveAllocationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _leaveAllocationRepository = leaveAllocationRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -25,7 +25,7 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.C
 
             try
             {
-                var validatedModel = await new UpdateLeaveAllocationDtoValidator(_leaveAllocationRepository).ValidateAsync(request.UpdateLeaveAllocationDto, cancellationToken);
+                var validatedModel = await new UpdateLeaveAllocationDtoValidator(_unitOfWork.GenericRepository<LeaveAllocation>()).ValidateAsync(request.UpdateLeaveAllocationDto, cancellationToken);
 
                 if (!validatedModel.IsValid)
                 {
@@ -36,7 +36,8 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.C
                 }
 
                 var leaveAllocation = _mapper.Map<LeaveAllocation>(request.UpdateLeaveAllocationDto);
-                await _leaveAllocationRepository.Update(leaveAllocation);
+                await _unitOfWork.GenericRepository<LeaveAllocation>().Update(leaveAllocation);
+                await _unitOfWork.Save();
 
                 response.Success = true;
                 response.Message = "Updated Successfully";

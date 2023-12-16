@@ -19,7 +19,7 @@ namespace Tenas.LeaveManagement.Application.DTOs.LeaveRequest.Validators
 
             RuleFor(x => x.LeaveTypeId)
                 .NotEmpty().WithMessage("{PropertyName} is required.")
-                .MustAsync(async (id, token) => !await _leaveRequestRepository.Exists(id))
+                .MustAsync(async (id, token) => await _leaveRequestRepository.Exists(id))
                 .WithMessage("{PropertyName} doesn't existe.");
 
             //RuleFor(x => x.LeaveTypeId)

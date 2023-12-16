@@ -8,12 +8,10 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.C
 {
     public class DeleteLeaveAllocationCommandHandler : IRequestHandler<DeleteLeaveAllocationCommand, BaseCommandResponse>
     {
-        private readonly IGenericRepository<LeaveAllocation> _leaveAllocationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteLeaveAllocationCommandHandler(IGenericRepository<LeaveAllocation> leaveAllocationRepository)
-        {
-            _leaveAllocationRepository = leaveAllocationRepository;
-        }
+        public DeleteLeaveAllocationCommandHandler(IUnitOfWork unitOfWork)
+            => _unitOfWork = unitOfWork;
 
         public async Task<BaseCommandResponse> Handle(DeleteLeaveAllocationCommand request, CancellationToken cancellationToken)
         {
@@ -21,7 +19,8 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.C
 
             try
             {
-                await _leaveAllocationRepository.Delete(request.Id);
+                await _unitOfWork.GenericRepository<LeaveAllocation>().Delete(request.Id);
+                await _unitOfWork.Save();
                 response.Success = true;
                 response.Message = "Deleted Successfully";
                 response.Id = request.Id;

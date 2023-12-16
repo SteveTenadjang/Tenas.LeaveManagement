@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using Tenas.LeaveManagement.Application.DTOs.LeaveType.Validators;
-using Tenas.LeaveManagement.Application.Exceptions;
 using Tenas.LeaveManagement.Application.Features.LeaveTypes.Requests.Commands;
 using Tenas.LeaveManagement.Application.Contracts.Persistance;
 using Tenas.LeaveManagement.Domain;
@@ -11,12 +10,12 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveTypes.Handlers.Command
 {
     public class UpdateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeCommand, BaseCommandResponse>
     {
-        private readonly IGenericRepository<LeaveType> _leaveTypeRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateLeaveTypeCommandHandler(IGenericRepository<LeaveType> leaveTypeRepository, IMapper mapper)
+        public UpdateLeaveTypeCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _leaveTypeRepository = leaveTypeRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -37,7 +36,8 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveTypes.Handlers.Command
                 }
 
                 var leaveType = _mapper.Map<LeaveType>(request.LeaveTypeDto);
-                await _leaveTypeRepository.Update(leaveType);
+                await _unitOfWork.GenericRepository<LeaveType>().Update(leaveType);
+                await _unitOfWork.Save();
 
                 response.Success = true;
                 response.Message = "Updated Successfully";

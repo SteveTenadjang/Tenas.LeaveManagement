@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tenas.LeaveManagement.Application.Models
+namespace Tenas.LeaveManagement.Application.Models.Mail
 {
     public class Email
     {

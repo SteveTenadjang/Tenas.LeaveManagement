@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tenas.LeaveManagement.Application.Contracts.Infrastructure;
-using Tenas.LeaveManagement.Application.Models;
+using Tenas.LeaveManagement.Application.Models.Mail;
 using Tenas.LeaveManagement.Infrastructure.Mail;
 
 namespace Tenas.LeaveManagement.Infrastructure

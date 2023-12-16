@@ -21,7 +21,6 @@ namespace Tenas.LeaveManagement.Persistance.Repositories
         public async Task<T> Add(T entity)
         {
             await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
             return entity;
         }
 
@@ -32,7 +31,6 @@ namespace Tenas.LeaveManagement.Persistance.Repositories
         {
             var entity = await GetById(id);
             _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<T> GetById(Guid id)
@@ -41,13 +39,20 @@ namespace Tenas.LeaveManagement.Persistance.Repositories
         public async Task Update(T entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> Exists(Guid id)
             => await GetById(id) == null;
 
+        public async Task<bool> Exists(Expression<Func<T, bool>> predicate)
+            => await _dbSet.AnyAsync(predicate);
+
         public async Task<IReadOnlyList<T>> Find(Expression<Func<T, bool>> predicate)
             => await _dbSet.Where(predicate).ToListAsync();
+
+        public async Task AddRange(List<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+        }
     }
 }

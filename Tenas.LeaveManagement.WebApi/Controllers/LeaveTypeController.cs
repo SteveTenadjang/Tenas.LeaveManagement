@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tenas.LeaveManagement.Application.DTOs.LeaveType;
 using Tenas.LeaveManagement.Application.Features.LeaveTypes.Requests.Commands;
 using Tenas.LeaveManagement.Application.Features.LeaveTypes.Requests.Queries;
+using Tenas.LeaveManagement.Application.Reponses;
 
 namespace Tenas.LeaveManagement.WebApi.Controllers
 {
@@ -22,19 +24,20 @@ namespace Tenas.LeaveManagement.WebApi.Controllers
             => Ok(await _mediator.Send(new GetLeaveTypeListRequest()));
 
         [HttpGet("GetById/{id:Guid}")]
+        [Authorize]
         public async Task<ActionResult<LeaveTypeDto>> Get(Guid Id)
             => Ok(await _mediator.Send(new GetLeaveTypeDetailRequest { Id = Id }));
         
 
         [HttpPost]
-        public async Task<ActionResult> Post(CreateLeaveTypeDto createLeaveTypeDto)
+        public async Task<ActionResult<BaseCommandResponse>> Post(CreateLeaveTypeDto createLeaveTypeDto)
         {
             var response = await _mediator.Send(new CreateLeaveTypeCommand { CreateLeaveTypeDto = createLeaveTypeDto });
             return Ok(response);
         }
 
         [HttpPut]
-        public async Task<ActionResult> Put(LeaveTypeDto leaveType)
+        public async Task<ActionResult<BaseCommandResponse>> Put(LeaveTypeDto leaveType)
         {
             await _mediator.Send(new UpdateLeaveTypeCommand { LeaveTypeDto = leaveType });
             return NoContent();

@@ -40,6 +40,9 @@ namespace Tenas.LeaveManagement.Persistance.Migrations
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("LeaveTypeId")
                         .HasColumnType("uniqueidentifier");
 
@@ -90,6 +93,9 @@ namespace Tenas.LeaveManagement.Persistance.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("EndDate")
@@ -156,16 +162,16 @@ namespace Tenas.LeaveManagement.Persistance.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0effa21e-3607-4ce6-9493-cf3ada696caa"),
+                            Id = new Guid("46b9d394-920e-4bf9-8f95-aeada94b227e"),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DefaultDays = 13,
+                            DefaultDays = 16,
                             Name = "Vacation"
                         },
                         new
                         {
-                            Id = new Guid("aec4258d-89dd-4439-8d3d-116f561d18b8"),
+                            Id = new Guid("a0df8872-7d0b-4916-bc35-061c42235a3d"),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DefaultDays = 2,
+                            DefaultDays = 3,
                             Name = "Sick"
                         });
                 });

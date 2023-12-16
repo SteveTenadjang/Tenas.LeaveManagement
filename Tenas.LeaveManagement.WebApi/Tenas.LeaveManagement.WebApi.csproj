@@ -26,6 +26,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Tenas.LeaveManagement.Application\Tenas.LeaveManagement.Application.csproj" />
 	  <ProjectReference Include="..\Tenas.LeaveManagement.Domain\Tenas.LeaveManagement.Domain.csproj" />
+	  <ProjectReference Include="..\Tenas.LeaveManagement.Identity\Tenas.LeaveManagement.Identity.csproj" />
 	  <ProjectReference Include="..\Tenas.LeaveManagement.Infrastructure\Tenas.LeaveManagement.Infrastructure.csproj" />
 	  <ProjectReference Include="..\Tenas.LeaveManagement.Persistance\Tenas.LeaveManagement.Persistance.csproj" />
 	</ItemGroup>

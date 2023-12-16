@@ -2,7 +2,7 @@
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Tenas.LeaveManagement.Application.Contracts.Infrastructure;
-using Tenas.LeaveManagement.Application.Models;
+using Tenas.LeaveManagement.Application.Models.Mail;
 
 namespace Tenas.LeaveManagement.Infrastructure.Mail
 {

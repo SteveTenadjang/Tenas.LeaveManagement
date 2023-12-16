@@ -16,6 +16,7 @@ namespace Tenas.LeaveManagement.Persistance
             });
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
     }

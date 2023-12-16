@@ -1,4 +1,4 @@
-﻿namespace Tenas.LeaveManagement.Application.Models
+﻿namespace Tenas.LeaveManagement.Application.Models.Mail
 {
     public class EmailSettings
     {

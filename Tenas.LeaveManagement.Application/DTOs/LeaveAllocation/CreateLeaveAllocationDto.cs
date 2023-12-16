@@ -1,12 +1,7 @@
-﻿using Tenas.LeaveManagement.Application.DTOs.LeaveAllocation.Validators;
-
-namespace Tenas.LeaveManagement.Application.DTOs.LeaveAllocation
+﻿namespace Tenas.LeaveManagement.Application.DTOs.LeaveAllocation
 {
-    public class CreateLeaveAllocationDto : ILeaveAllocationDto
+    public class CreateLeaveAllocationDto
     {
-        public int NumberOfDays { get; set; }
         public Guid LeaveTypeId { get; set; }
-        public int Period { get; set; }
-
     }
 }

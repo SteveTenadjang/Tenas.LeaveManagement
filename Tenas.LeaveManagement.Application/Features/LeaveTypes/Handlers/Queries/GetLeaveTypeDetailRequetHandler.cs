@@ -10,11 +10,11 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveTypes.Handlers.Queries
 {
     public class GetLeaveTypeDetailRequetHandler : IRequestHandler<GetLeaveTypeDetailRequest, BaseQueryResponse>
     {
-        private readonly IGenericRepository<LeaveType> _leaveTypeRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public GetLeaveTypeDetailRequetHandler(IGenericRepository<LeaveType> leaveTypeRepository, IMapper mapper)
+        public GetLeaveTypeDetailRequetHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _leaveTypeRepository = leaveTypeRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -23,7 +23,7 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveTypes.Handlers.Queries
             BaseQueryResponse response = new();
             try
             {
-                var leaveType = await _leaveTypeRepository.GetById(request.Id);
+                var leaveType = await _unitOfWork.GenericRepository<LeaveType>().GetById(request.Id);
                 response.Success = true;
                 response.Data = _mapper.Map<LeaveTypeDto>(leaveType);
             }

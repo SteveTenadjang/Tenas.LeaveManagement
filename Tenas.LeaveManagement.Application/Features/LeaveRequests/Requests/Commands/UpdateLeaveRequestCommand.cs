@@ -6,6 +6,7 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Requests.Comm
 {
     public class UpdateLeaveRequestCommand : IRequest<BaseCommandResponse>
     {
+        public  Guid Id { get; set; }
         public UpdateLeaveRequestDto UpdateLeaveRequestDto { get; set; }
         public ChangeLeaveRequestApprovalDto ChangeLeaveRequestApprovalDto { get; set; }
     }

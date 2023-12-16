@@ -13,6 +13,9 @@ namespace Tenas.LeaveManagement.Application.Profiles
             CreateMap<LeaveRequest, LeaveRequestDto>().ReverseMap();
             CreateMap<LeaveRequest, CreateLeaveRequestDto>().ReverseMap();
             CreateMap<LeaveRequest, UpdateLeaveRequestDto>().ReverseMap();
+            CreateMap<LeaveRequest, LeaveRequestListDto>()
+                .ForMember(dest => dest.DateRequested, opt => opt.MapFrom(src => src.CreatedAt) )
+                .ReverseMap();
 
             CreateMap<LeaveAllocation, LeaveAllocationDto>().ReverseMap();
             CreateMap<LeaveAllocation, CreateLeaveAllocationDto>().ReverseMap();

@@ -1,5 +1,6 @@
 ﻿using Tenas.LeaveManagement.Application.DTOs.Common;
 using Tenas.LeaveManagement.Application.DTOs.LeaveType;
+using Tenas.LeaveManagement.Application.Models.Identity;
 
 namespace Tenas.LeaveManagement.Application.DTOs.LeaveAllocation
 {
@@ -9,5 +10,7 @@ namespace Tenas.LeaveManagement.Application.DTOs.LeaveAllocation
         public LeaveTypeDto LeaveTypeDto { get; set; }
         public Guid LeaveTypeId { get; set; }
         public int Period { get; set; }
+        public Employee Employee { get; set; }
+        public Guid EmployeeId { get; set; }
     }
 }
