@@ -4,7 +4,7 @@ using Tenas.LeaveManagement.Application.Reponses;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Requests.Commands
 {
-    public class UpdateLeaveRequestCommand : IRequest<BaseCommandResponse>
+    public class UpdateLeaveRequestCommand : IRequest<BaseQueryResponse>
     {
         public  Guid Id { get; set; }
         public UpdateLeaveRequestDto UpdateLeaveRequestDto { get; set; }

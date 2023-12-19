@@ -6,32 +6,22 @@ using Tenas.LeaveManagement.Application.Reponses;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Commands
 {
-    public class DeleteLeaveAllocationCommandHandler : IRequestHandler<DeleteLeaveAllocationCommand, BaseCommandResponse>
+    public class DeleteLeaveAllocationCommandHandler : IRequestHandler<DeleteLeaveAllocationCommand, BaseQueryResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
 
         public DeleteLeaveAllocationCommandHandler(IUnitOfWork unitOfWork)
             => _unitOfWork = unitOfWork;
 
-        public async Task<BaseCommandResponse> Handle(DeleteLeaveAllocationCommand request, CancellationToken cancellationToken)
+        public async Task<BaseQueryResponse> Handle(DeleteLeaveAllocationCommand request, CancellationToken cancellationToken)
         {
-            BaseCommandResponse response = new();
+            await _unitOfWork.GenericRepository<LeaveAllocation>().Delete(request.Id);
+            await _unitOfWork.Save();
 
-            try
+            return new BaseQueryResponse
             {
-                await _unitOfWork.GenericRepository<LeaveAllocation>().Delete(request.Id);
-                await _unitOfWork.Save();
-                response.Success = true;
-                response.Message = "Deleted Successfully";
-                response.Id = request.Id;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = "Operation Failed";
-                response.Errors.Add(ex.Message);
-            }
-            return response;
+                Message = "Deleted Successfully",
+            };
         }
     }
 }

@@ -9,9 +9,8 @@ using Tenas.LeaveManagement.Domain;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Handlers.Queries
 {
-    internal class GetLeaveRequestDetailRequestHandler : IRequestHandler<GetLeaveRequestDetailRequest, BaseQueryResponse>
+    internal class GetLeaveRequestDetailRequestHandler : IRequestHandler<GetLeaveRequestDetailRequest, BaseCommandResponse<LeaveRequestDto>>
     {
-        //private readonly IGenericRepository<Domain.LeaveRequest> _leaveRequetRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
@@ -23,23 +22,16 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Handlers.Quer
             _mapper = mapper;
         }
 
-        public async Task<BaseQueryResponse> Handle(GetLeaveRequestDetailRequest request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<LeaveRequestDto>> Handle(GetLeaveRequestDetailRequest request, CancellationToken cancellationToken)
         {
-            BaseQueryResponse response = new();
-            try
-            {
-                var leaveRequest = _mapper.Map<LeaveRequestDto>(await _unitOfWork.GenericRepository<LeaveRequest>().GetById(request.Id));
-                leaveRequest.Employee = await _userService.GetEmployee(leaveRequest.EmployeeId);
+            var leaveRequest = _mapper.Map<LeaveRequestDto>(await _unitOfWork.GenericRepository<LeaveRequest>().GetById(request.Id));
+            leaveRequest.Employee = await _userService.GetEmployee(leaveRequest.EmployeeId);
 
-                response.Success = true;
-                response.Data = leaveRequest;
-            }
-            catch (Exception ex)
+            return new BaseCommandResponse<LeaveRequestDto>
             {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return response;
+                IsSuccess = true,
+                Data = leaveRequest
+            };
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Tenas.LeaveManagement.Application.DTOs.LeaveAllocation.Validators
+﻿namespace Tenas.LeaveManagement.Application.DTOs.LeaveAllocation
 {
     public interface ILeaveAllocationDto
     {

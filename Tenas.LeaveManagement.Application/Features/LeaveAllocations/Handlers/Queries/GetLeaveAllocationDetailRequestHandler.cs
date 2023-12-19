@@ -8,7 +8,7 @@ using Tenas.LeaveManagement.Domain;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Queries
 {
-    public class GetLeaveAllocationDetailRequestHandler : IRequestHandler<GetLeaveAllocationDetailRequest, BaseQueryResponse>
+    public class GetLeaveAllocationDetailRequestHandler : IRequestHandler<GetLeaveAllocationDetailRequest, BaseCommandResponse<LeaveAllocationDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -19,21 +19,13 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Q
             _mapper = mapper;
         }
 
-        public async Task<BaseQueryResponse> Handle(GetLeaveAllocationDetailRequest request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<LeaveAllocationDto>> Handle(GetLeaveAllocationDetailRequest request, CancellationToken cancellationToken)
         {
-            BaseQueryResponse response = new();
-            try
-            {
-                var leaveAllocation = await _unitOfWork.GenericRepository<LeaveAllocation>().GetById(request.Id);
-                response.Success = true;
-                response.Data = _mapper.Map<LeaveAllocationDto>(leaveAllocation);
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return response;
+            var leaveAllocation = await _unitOfWork.GenericRepository<LeaveAllocation>().GetById(request.Id);
+            return new BaseCommandResponse<LeaveAllocationDto>{
+                IsSuccess = true,
+                Data = _mapper.Map<LeaveAllocationDto>(leaveAllocation),
+            };
         }
     }
 }

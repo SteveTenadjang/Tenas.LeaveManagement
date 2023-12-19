@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using MediatR;
-using Tenas.LeaveManagement.Application.DTOs.LeaveType;
-using Tenas.LeaveManagement.Application.Features.LeaveTypes.Requests.Queries;
-using Tenas.LeaveManagement.Application.Contracts.Persistance;
+﻿using MediatR;
+using AutoMapper;
 using Tenas.LeaveManagement.Domain;
 using Tenas.LeaveManagement.Application.Reponses;
+using Tenas.LeaveManagement.Application.DTOs.LeaveType;
+using Tenas.LeaveManagement.Application.Contracts.Persistance;
+using Tenas.LeaveManagement.Application.Features.LeaveTypes.Requests.Queries;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveTypes.Handlers.Queries
 {
-    public class GetLeaveTypeListRequestHandler : IRequestHandler<GetLeaveTypeListRequest, BaseQueryResponse>
+    public class GetLeaveTypeListRequestHandler : IRequestHandler<GetLeaveTypeListRequest, BaseCommandResponse<List<LeaveTypeDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -18,21 +18,14 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveTypes.Handlers.Queries
             _mapper = mapper;
         }
 
-        public async Task<BaseQueryResponse> Handle(GetLeaveTypeListRequest request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<List<LeaveTypeDto>>> Handle(GetLeaveTypeListRequest request, CancellationToken cancellationToken)
         {
-            BaseQueryResponse response = new();
-            try
+            var leaveTypes = await _unitOfWork.GenericRepository<LeaveType>().GetAll();
+            return new BaseCommandResponse<List<LeaveTypeDto>>
             {
-                var leaveTypes = await _unitOfWork.GenericRepository<LeaveType>().GetAll();
-                response.Success = true;
-                response.Data = _mapper.Map<List<LeaveTypeDto>>(leaveTypes);
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return response;
+                IsSuccess = true,
+                Data = _mapper.Map<List<LeaveTypeDto>>(leaveTypes)
+            };
         }
     }
 }

@@ -6,34 +6,27 @@ using Tenas.LeaveManagement.Application.Contracts.Persistance;
 using Tenas.LeaveManagement.Domain;
 using Tenas.LeaveManagement.Application.Reponses;
 using Tenas.LeaveManagement.Application.Contracts.Identity;
+using Tenas.LeaveManagement.Application.Exceptions;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Commands
 {
-    public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAllocationCommand, BaseCommandResponse>
+    public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAllocationCommand, BaseQueryResponse>
     {
         private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public CreateLeaveAllocationCommandHandler(IUserService userService, IUnitOfWork unitOfWork,IMapper mapper)
+        public CreateLeaveAllocationCommandHandler(IUserService userService, IUnitOfWork unitOfWork)
         {
             _userService = userService;
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse> Handle(CreateLeaveAllocationCommand request, CancellationToken cancellationToken)
+        public async Task<BaseQueryResponse> Handle(CreateLeaveAllocationCommand request, CancellationToken cancellationToken)
         {
-            BaseCommandResponse response = new();
             var validatedModel = await new CreateLeaveAllocationDtoValidator(_unitOfWork.GenericRepository<LeaveAllocation>()).ValidateAsync(request.CreateLeaveAllocationDto, cancellationToken);
 
             if (!validatedModel.IsValid)
-            {
-                response.Success = false;
-                response.Message = "Creation Failed";
-                response.Errors = validatedModel.Errors.Select(e => e.ErrorMessage).ToList();
-                return response;
-            }
+                throw new ValidationException(validatedModel);
 
             var leaveType = await _unitOfWork.GenericRepository<LeaveType>().GetById(request.CreateLeaveAllocationDto.LeaveTypeId);
             var employees = await _userService.GetEmployees();
@@ -61,13 +54,8 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.C
 
             await _unitOfWork.GenericRepository<LeaveAllocation>().AddRange(allocations);
             await _unitOfWork.Save();
-            //var leaveAllocation = _mapper.Map<LeaveAllocation>(request.CreateLeaveAllocationDto);
-            //leaveAllocation = await _leaveAllocationRepository.Add(leaveAllocation);
-                
-            response.Success = true;
-            response.Message = "Allocation Successfully";
-            response.Id = Guid.NewGuid();
-            return response;
+
+            return new BaseQueryResponse { Message = "Allocation Successful"};
         }
     }
 }

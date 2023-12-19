@@ -1,11 +1,9 @@
 ﻿namespace Tenas.LeaveManagement.Application.Reponses
 {
-    public class BaseCommandResponse
+    public class BaseCommandResponse<T>
     {
-        public Guid? Id { get; set; }
-        public bool Success { get; set; } = true;
-        public string? Message { get; set; }
-        public object? Data { get; set; }
-        public List<string> Errors { get; set; }
+        public bool IsSuccess { get; set; } = true;
+        public string Message { get; set; } = "Operation Successful";
+        public T Data { get; set; }
     }
 }

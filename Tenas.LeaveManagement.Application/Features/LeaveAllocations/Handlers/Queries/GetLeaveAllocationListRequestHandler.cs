@@ -11,7 +11,7 @@ using Tenas.LeaveManagement.Application.Constants;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Queries
 {
-    public class GetLeaveAllocationListRequestHandler : IRequestHandler<GetLeaveAllocationListRequest, BaseQueryResponse>
+    public class GetLeaveAllocationListRequestHandler : IRequestHandler<GetLeaveAllocationListRequest, BaseCommandResponse<List<LeaveAllocationDto>>>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
@@ -30,44 +30,36 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Q
             _mapper = mapper;
         }
 
-        public async Task<BaseQueryResponse> Handle(GetLeaveAllocationListRequest request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<List<LeaveAllocationDto>>> Handle(GetLeaveAllocationListRequest request, CancellationToken cancellationToken)
         {
-            BaseQueryResponse response = new();
-            try
+            var leaveAllocations = new List<LeaveAllocation>();
+            var allocations = new List<LeaveAllocationDto>();
+
+            if(request.IsLoggedInUser)
             {
-                var leaveAllocations = new List<LeaveAllocation>();
-                var allocations = new List<LeaveAllocationDto>();
+                var userId = _httpContextAccessor.HttpContext.User.FindFirst(u => u.Type == CustomClaimTypes.Uid)?.Value;
+                leaveAllocations = (List<LeaveAllocation>) await _unitOfWork.GenericRepository<LeaveAllocation>().Find(x => x.EmployeeId == new Guid(userId));
 
-                if(request.IsLoggedInUser)
-                {
-                    var userId = _httpContextAccessor.HttpContext.User.FindFirst(u => u.Type == CustomClaimTypes.Uid)?.Value;
-                    leaveAllocations = (List<LeaveAllocation>) await _unitOfWork.GenericRepository<LeaveAllocation>().Find(x => x.EmployeeId == new Guid(userId));
+                var employee = await _userService.GetEmployee(new Guid(userId));
+                allocations = _mapper.Map<List<LeaveAllocationDto>>(leaveAllocations);
 
-                    var employee = await _userService.GetEmployee(new Guid(userId));
-                    allocations = _mapper.Map<List<LeaveAllocationDto>>(leaveAllocations);
-
-                    foreach (var alloc in allocations)
-                        alloc.Employee = employee;
-                }
-                else
-                {
-                    leaveAllocations = (List<LeaveAllocation>) await _unitOfWork.GenericRepository<LeaveAllocation>().GetAll();
-                    allocations = _mapper.Map<List<LeaveAllocationDto>>(allocations);
-
-                    foreach (var alloc in allocations)
-                        alloc.Employee = await _userService.GetEmployee(alloc.EmployeeId);
-                }
-
-
-                response.Success = true;
-                response.Data = allocations;
+                foreach (var alloc in allocations)
+                    alloc.Employee = employee;
             }
-            catch (Exception ex)
+            else
             {
-                response.Success = false;
-                response.Message = ex.Message;
+                leaveAllocations = (List<LeaveAllocation>) await _unitOfWork.GenericRepository<LeaveAllocation>().GetAll();
+                allocations = _mapper.Map<List<LeaveAllocationDto>>(allocations);
+
+                foreach (var alloc in allocations)
+                    alloc.Employee = await _userService.GetEmployee(alloc.EmployeeId);
             }
-            return response;
+
+            return new BaseCommandResponse<List<LeaveAllocationDto>>
+            {
+                IsSuccess = true,
+                Data = allocations
+            };
         }
     }
 }

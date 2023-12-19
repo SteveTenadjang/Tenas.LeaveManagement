@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tenas.LeaveManagement.Application.Contracts.Identity;
 using Tenas.LeaveManagement.Application.Models.Identity;
+using Tenas.LeaveManagement.Application.Contracts.Identity;
 
 namespace Tenas.LeaveManagement.WebApi.Controllers
 {
@@ -11,20 +11,14 @@ namespace Tenas.LeaveManagement.WebApi.Controllers
         private readonly IAuthService _authService;
 
         public AuthController(IAuthService authService)
-        {
-            _authService = authService;
-        }
+            => _authService = authService;
 
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login(AuthRequest request)
-        {
-            return Ok(await _authService.Login(request));
-        }
+            => Ok(await _authService.Login(request));
 
         [HttpPost("register")]
         public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
-        {
-            return Ok(await _authService.Register(request));
-        }
+            => Ok(await _authService.Register(request));
     }
 }

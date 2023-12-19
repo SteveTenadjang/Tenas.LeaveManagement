@@ -10,10 +10,11 @@ using Tenas.LeaveManagement.Application.Models.Mail;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Tenas.LeaveManagement.Application.Constants;
+using Tenas.LeaveManagement.Application.Exceptions;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
 {
-    public class CreateLeaveRequestCommandHandler : IRequestHandler<CreateLeaveRequestCommand, BaseCommandResponse>
+    public class CreateLeaveRequestCommandHandler : IRequestHandler<CreateLeaveRequestCommand, BaseQueryResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -28,67 +29,48 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveRequests.Handlers.Comm
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
+        public async Task<BaseQueryResponse> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
         {
-            BaseCommandResponse response = new();
-            try
+            var validatedModel = await new CreateLeaveRequestDtoValidator(_unitOfWork.GenericRepository<LeaveRequest>()).ValidateAsync(request.CreateLeaveRequestDto, cancellationToken);
+            var userId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(q => q.Type == CustomClaimTypes.Uid)?.Value;
+            var allocations = await _unitOfWork.GenericRepository<LeaveAllocation>().Find(x => x.EmployeeId == new Guid(userId) && x.LeaveTypeId == request.CreateLeaveRequestDto.LeaveTypeId);
+
+            if(allocations.FirstOrDefault() is null)
+                validatedModel.Errors.Add(new FluentValidation.Results.ValidationFailure(
+                    nameof(request.CreateLeaveRequestDto.LeaveTypeId), "You don't have any allocation for this leave type"
+                ));
+
+            int daysRequested = (int) (request.CreateLeaveRequestDto.EndDate - request.CreateLeaveRequestDto.StartDate).TotalDays;
+
+            if (daysRequested > allocations?.FirstOrDefault()?.NumberOfDays)
+                validatedModel.Errors.Add(new FluentValidation.Results.ValidationFailure(
+                    nameof(request.CreateLeaveRequestDto.EndDate), "You don't have enough days for this request"    
+                ));
+
+            if (!validatedModel.IsValid)
+                throw new ValidationException(validatedModel);
+
+            var leaveRequest = _mapper.Map<LeaveRequest>(request.CreateLeaveRequestDto);
+            leaveRequest.EmployeeId = new Guid(userId);
+            leaveRequest = await _unitOfWork.GenericRepository<LeaveRequest>().Add(leaveRequest);
+            await _unitOfWork.Save();
+
+            var userEmail = _httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
+            var email = new Email
             {
-                var validatedModel = await new CreateLeaveRequestDtoValidator(_unitOfWork.GenericRepository<LeaveRequest>()).ValidateAsync(request.CreateLeaveRequestDto, cancellationToken);
-                //var validatedModel = await new CreateLeaveRequestDtoValidator(_leaveRequestRepository).ValidateAsync(request.CreateLeaveRequestDto, cancellationToken);
-                var userId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(q => q.Type == CustomClaimTypes.Uid)?.Value;
+                To = userEmail,
+                Body = $"Your leave request for {request.CreateLeaveRequestDto.StartDate:D} to {request.CreateLeaveRequestDto.EndDate:D}" +
+                    $"has been submitted successfully.",
+                Subject = "Leave Request Submitted"
+            };
 
-                //var allocation = await _leaveAllocationRepository.Find(x => x.EmployeeId == new Guid(userId) && x.LeaveTypeId == request.CreateLeaveRequestDto.LeaveTypeId);
-                var allocations = await _unitOfWork.GenericRepository<LeaveAllocation>().Find(x => x.EmployeeId == new Guid(userId) && x.LeaveTypeId == request.CreateLeaveRequestDto.LeaveTypeId);
+            await _emailSender.SendEmail(email);
 
-                if(allocations.FirstOrDefault() is null)
-                    validatedModel.Errors.Add(new FluentValidation.Results.ValidationFailure(
-                        nameof(request.CreateLeaveRequestDto.LeaveTypeId), "You don't have any allocation for this leave type"
-                    ));
-
-                int daysRequested = (int) (request.CreateLeaveRequestDto.EndDate - request.CreateLeaveRequestDto.StartDate).TotalDays;
-
-                if (daysRequested > allocations?.FirstOrDefault()?.NumberOfDays)
-                    validatedModel.Errors.Add(new FluentValidation.Results.ValidationFailure(
-                        nameof(request.CreateLeaveRequestDto.EndDate), "You don't have enough days for this request"    
-                    ));
-
-                
-                if (!validatedModel.IsValid)
-                {
-                    response.Success = false;
-                    response.Message = "Creation Failed";
-                    response.Errors = validatedModel.Errors.Select(e => e.ErrorMessage).ToList();
-                    return response;
-                }
-
-                var leaveRequest = _mapper.Map<LeaveRequest>(request.CreateLeaveRequestDto);
-                leaveRequest.EmployeeId = new Guid(userId);
-                //leaveRequest = await _leaveRequestRepository.Add(leaveRequest);
-                leaveRequest = await _unitOfWork.GenericRepository<LeaveRequest>().Add(leaveRequest);
-                await _unitOfWork.Save();
-
-                response.Success = true;
-                response.Message = "Creation Successful";
-                response.Id = leaveRequest.Id;
-
-                var userEmail = _httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
-                var email = new Email
-                {
-                    To = userEmail,
-                    Body = $"Your leave request for {request.CreateLeaveRequestDto.StartDate:D} to {request.CreateLeaveRequestDto.EndDate:D}" +
-                        $"has been submitted successfully.",
-                    Subject = "Leave Request Submitted"
-                };
-
-                await _emailSender.SendEmail(email);
-            }
-            catch (Exception ex)
+            return new BaseQueryResponse
             {
-                response.Success = false;
-                response.Message = "Operation Failed";
-                response.Errors.Add(ex.Message);
-            }
-            return response;
+                Message = "Creation Successful", 
+                Data = request.CreateLeaveRequestDto
+            };
         }
     }
 }

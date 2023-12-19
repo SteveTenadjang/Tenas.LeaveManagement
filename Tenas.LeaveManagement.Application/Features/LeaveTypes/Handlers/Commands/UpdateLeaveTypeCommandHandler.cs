@@ -5,10 +5,11 @@ using Tenas.LeaveManagement.Application.Features.LeaveTypes.Requests.Commands;
 using Tenas.LeaveManagement.Application.Contracts.Persistance;
 using Tenas.LeaveManagement.Domain;
 using Tenas.LeaveManagement.Application.Reponses;
+using Tenas.LeaveManagement.Application.Exceptions;
 
 namespace Tenas.LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
 {
-    public class UpdateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeCommand, BaseCommandResponse>
+    public class UpdateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeCommand, BaseQueryResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -19,37 +20,22 @@ namespace Tenas.LeaveManagement.Application.Features.LeaveTypes.Handlers.Command
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse> Handle(UpdateLeaveTypeCommand request, CancellationToken cancellationToken)
+        public async Task<BaseQueryResponse> Handle(UpdateLeaveTypeCommand request, CancellationToken cancellationToken)
         {
-            BaseCommandResponse response = new();
+            var validatedModel = await new UpdateLeaveTypeDtoValidator().ValidateAsync(request.LeaveTypeDto, cancellationToken);
 
-            try
+            if (!validatedModel.IsValid)
+                throw new ValidationException(validatedModel);
+
+            var leaveType = _mapper.Map<LeaveType>(request.LeaveTypeDto);
+            await _unitOfWork.GenericRepository<LeaveType>().Update(leaveType);
+            await _unitOfWork.Save();
+
+            return new BaseQueryResponse
             {
-                var validatedModel = await new UpdateLeaveTypeDtoValidator().ValidateAsync(request.LeaveTypeDto, cancellationToken);
-
-                if (!validatedModel.IsValid)
-                {
-                    response.Success = false;
-                    response.Message = "Update Failed";
-                    response.Errors = validatedModel.Errors.Select(e => e.ErrorMessage).ToList();
-                    return response;
-                }
-
-                var leaveType = _mapper.Map<LeaveType>(request.LeaveTypeDto);
-                await _unitOfWork.GenericRepository<LeaveType>().Update(leaveType);
-                await _unitOfWork.Save();
-
-                response.Success = true;
-                response.Message = "Updated Successfully";
-                response.Id = leaveType.Id;
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = "Operation Failed";
-                response.Errors.Add(ex.Message);
-            }
-            return response;
+                Message = "Updated Successful",
+                Data = request.LeaveTypeDto
+            };
         }
     }
 }

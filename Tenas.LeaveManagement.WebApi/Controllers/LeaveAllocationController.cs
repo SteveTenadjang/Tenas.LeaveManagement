@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Tenas.LeaveManagement.Application.DTOs.LeaveAllocation;
 using Tenas.LeaveManagement.Application.Features.LeaveAllocations.Requests.Commands;
 using Tenas.LeaveManagement.Application.Features.LeaveAllocations.Requests.Queries;
-using Tenas.LeaveManagement.Application.Reponses;
 
 namespace Tenas.LeaveManagement.WebApi.Controllers
 {
@@ -14,37 +13,35 @@ namespace Tenas.LeaveManagement.WebApi.Controllers
         private readonly IMediator _mediator;
 
         public LeaveAllocationController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+            => _mediator = mediator;
 
         [HttpGet]
         public async Task<ActionResult<List<LeaveAllocationDto>>> Get(bool isLoggedInUser = false)
             => Ok(await _mediator.Send(new GetLeaveAllocationListRequest() { IsLoggedInUser = isLoggedInUser }));
 
-        [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<List<LeaveAllocationDto>>> GetById(Guid Id)
+        [HttpGet("GetById")]
+        public async Task<ActionResult<LeaveAllocationDto>> GetById(Guid Id)
             => Ok(await _mediator.Send(new GetLeaveAllocationDetailRequest { Id = Id }));
 
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse>> Post([FromBody] CreateLeaveAllocationDto createLeaveAllocationDto)
+        public async Task<ActionResult> Post(CreateLeaveAllocationDto createLeaveAllocationDto)
         {
             var response = await _mediator.Send(new CreateLeaveAllocationCommand { CreateLeaveAllocationDto = createLeaveAllocationDto });
             return Ok(response);
         }
 
         [HttpPut]
-        public async Task<ActionResult<BaseCommandResponse>> Put([FromBody] UpdateLeaveAllocationDto updateLeaveAllocationDto)
+        public async Task<ActionResult> Put(UpdateLeaveAllocationDto updateLeaveAllocationDto)
         {
-            await _mediator.Send(new UpdateLeaveAllocationCommand { UpdateLeaveAllocationDto = updateLeaveAllocationDto });
-            return NoContent();
+            var response = await _mediator.Send(new UpdateLeaveAllocationCommand { UpdateLeaveAllocationDto = updateLeaveAllocationDto });
+            return Ok(response);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete]
         public async Task<ActionResult> Delete(Guid Id)
         {
-            await _mediator.Send(new DeleteLeaveAllocationCommand { Id = Id });
-            return NoContent();
+            var response = await _mediator.Send(new DeleteLeaveAllocationCommand { Id = Id });
+            return Ok(response);
         }
     }
 }

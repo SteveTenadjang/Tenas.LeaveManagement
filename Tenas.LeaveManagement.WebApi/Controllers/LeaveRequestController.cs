@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Tenas.LeaveManagement.Application.DTOs.LeaveRequest;
 using Tenas.LeaveManagement.Application.Features.LeaveRequests.Requests.Commands;
 using Tenas.LeaveManagement.Application.Features.LeaveRequests.Requests.Queries;
-using Tenas.LeaveManagement.Application.Reponses;
 
 namespace Tenas.LeaveManagement.WebApi.Controllers
 {
@@ -14,44 +13,42 @@ namespace Tenas.LeaveManagement.WebApi.Controllers
         private readonly IMediator _mediator;
 
         public LeaveRequestController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+            => _mediator = mediator;
 
         [HttpGet]
         public async Task<ActionResult<List<LeaveRequestListDto>>> Get(bool isLoggedInUser = false)
             => Ok(await _mediator.Send(new GetLeaveRequestListRequest() { IsLoggedInUser = isLoggedInUser }));
 
-        [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<List<LeaveRequestDto>>> GetById(Guid Id)
+        [HttpGet("GetById")]
+        public async Task<ActionResult<LeaveRequestDto>> GetById(Guid Id)
             => Ok(await _mediator.Send(new GetLeaveRequestDetailRequest { Id = Id }));
 
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse>> Post([FromBody] CreateLeaveRequestDto createLeaveRequestDto)
+        public async Task<ActionResult> Post(CreateLeaveRequestDto createLeaveRequestDto)
         {
             var response = await _mediator.Send(new CreateLeaveRequestCommand { CreateLeaveRequestDto = createLeaveRequestDto });
             return Ok(response);
         }
 
         [HttpPut]
-        public async Task<ActionResult<BaseCommandResponse>> Put([FromBody] UpdateLeaveRequestDto updateLeave)
+        public async Task<ActionResult> Put(UpdateLeaveRequestDto updateLeave)
         {
-            await _mediator.Send(new UpdateLeaveRequestCommand { UpdateLeaveRequestDto = updateLeave });
-            return NoContent();
+            var response = await _mediator.Send(new UpdateLeaveRequestCommand { UpdateLeaveRequestDto = updateLeave });
+            return Ok(response);
         }
 
         [HttpPut("changeapproval")]
-        public async Task<ActionResult> ChangeApproval([FromBody] ChangeLeaveRequestApprovalDto changeLeaveRequest)
+        public async Task<ActionResult> ChangeApproval(ChangeLeaveRequestApprovalDto changeLeaveRequest)
         {
-            await _mediator.Send(new UpdateLeaveRequestCommand { ChangeLeaveRequestApprovalDto = changeLeaveRequest });
-            return NoContent();
+            var response = await _mediator.Send(new UpdateLeaveRequestCommand { ChangeLeaveRequestApprovalDto = changeLeaveRequest });
+            return Ok(response);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete]
         public async Task<ActionResult> Delete(Guid Id)
         {
-            await _mediator.Send(new DeleteLeaveRequestCommand { Id = Id });
-            return NoContent();
+            var response = await _mediator.Send(new DeleteLeaveRequestCommand { Id = Id });
+            return Ok(response);
         }
     }
 }
